@@ -67,7 +67,7 @@ class PJObjectFactory {
             }
         }
         if (clz.isArray()) {
-            return clz.cast(Array.newInstance(clz.getTypeParameters().getClass(), 1));
+            return clz.cast(Array.newInstance(clz.getComponentType(), 1));
         }
         Function<Class<?>, ?> factory = objectFactories.get(clz);
         if (factory != null) {
