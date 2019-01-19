@@ -13,7 +13,9 @@ public class PojoTesterTest {
     @Test
     public void testCreators() {
         PojoTester pojoTester = PojoTester.forClass(Object.class);
-        pojoTester.createObject(String[].class);
+
+        PJObjectFactory objectFactory = new PJObjectFactory();
+        objectFactory.createObject(String[].class);
     }
 
 }

@@ -17,7 +17,7 @@ public class PJSetterGetterTest implements Consumer<PJContext> {
         Field field = PJReflectUtils.findField(context.getTestedType(), fieldName);
 
         Method setter = PJReflectUtils.findMethod(context.getTestedType(), "set" + sufix, field.getType());
-        if (setter == null || !PJReflectUtils.checkAccessors(setter, Modifier::isPublic)) {
+        if (setter == null || !PJReflectUtils.checkAccessors(setter, Modifier::isPublic, m -> !Modifier.isStatic(m))) {
             return;
         }
 
@@ -30,7 +30,7 @@ public class PJSetterGetterTest implements Consumer<PJContext> {
             }
         }
 
-        if (getter == null || !PJReflectUtils.checkAccessors(getter, Modifier::isPublic)) {
+        if (getter == null || !PJReflectUtils.checkAccessors(getter, Modifier::isPublic, m -> !Modifier.isStatic(m))) {
             return;
         }
 
