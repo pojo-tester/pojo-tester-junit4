@@ -2,6 +2,8 @@ package com.github.pojotester;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -23,7 +26,9 @@ public class PojoTester<T> {
 
     private Map<Class<?>, Consumer<PJContext>> defaultTests = new LinkedHashMap<>();
     private Map<String, List<Consumer<PJContext>>> userTests = new LinkedHashMap<>();
-    private Map<Class<?>, Function<Class<?>, ?>> objectFactories = new LinkedHashMap<>();
+
+    private LinkedList<Class<?>> objectFactoriesOrder = new LinkedList<>();
+    private HashMap<Class<?>, Function<Class<?>, ?>> objectFactories = new HashMap<>();
     private Class<T> testType;
     private boolean testSuperclassFields = false;
 
@@ -31,46 +36,58 @@ public class PojoTester<T> {
         this.testType = clazz;
         defaultTests.put(PJSetterGetterTest.class, new PJSetterGetterTest());
 
-        objectFactories.put(String.class, type -> "string-value");
+        addObjectFactory(String.class, type -> "string-value");
 
-        objectFactories.put(char.class, type -> 'c');
-        objectFactories.put(Character.class, type -> new Character('c'));
+        addObjectFactory(char.class, type -> 'c');
+        addObjectFactory(Character.class, type -> new Character('c'));
 
-        objectFactories.put(boolean.class, type -> true);
-        objectFactories.put(Boolean.class, type -> Boolean.TRUE);
+        addObjectFactory(boolean.class, type -> true);
+        addObjectFactory(Boolean.class, type -> Boolean.TRUE);
 
-        objectFactories.put(int.class, type -> 1);
-        objectFactories.put(Integer.class, type -> Integer.parseInt("1"));
+        addObjectFactory(int.class, type -> 1);
+        addObjectFactory(Integer.class, type -> Integer.parseInt("1"));
 
-        objectFactories.put(short.class, type -> 1);
-        objectFactories.put(Short.class, type -> Short.parseShort("1"));
+        addObjectFactory(short.class, type -> 1);
+        addObjectFactory(Short.class, type -> Short.parseShort("1"));
 
-        objectFactories.put(long.class, type -> 1L);
-        objectFactories.put(Long.class, type -> Long.parseLong("1"));
+        addObjectFactory(long.class, type -> 1L);
+        addObjectFactory(Long.class, type -> Long.parseLong("1"));
 
-        objectFactories.put(float.class, type -> 1.0f);
-        objectFactories.put(Float.class, type -> Float.parseFloat("1"));
+        addObjectFactory(float.class, type -> 1.0f);
+        addObjectFactory(Float.class, type -> Float.parseFloat("1"));
 
-        objectFactories.put(double.class, type -> 1.0d);
-        objectFactories.put(Double.class, type -> Double.parseDouble("1"));
+        addObjectFactory(double.class, type -> 1.0d);
+        addObjectFactory(Double.class, type -> Double.parseDouble("1"));
 
-        objectFactories.put(List.class, type -> new ArrayList<>());
-        objectFactories.put(Set.class, type -> new HashSet<>());
-        objectFactories.put(Map.class, type -> new HashMap<>());
-        objectFactories.put(Queue.class, type -> new LinkedList<>());
+        addObjectFactory(List.class, type -> new ArrayList<>());
+        addObjectFactory(Set.class, type -> new HashSet<>());
+        addObjectFactory(Map.class, type -> new HashMap<>());
+        addObjectFactory(Queue.class, type -> new LinkedList<>());
+        addObjectFactory(Collection.class, type -> new ArrayList<>());
 
-        objectFactories.put(Collection.class, type -> new ArrayList<>());
+        addObjectFactory(BigDecimal.class, type -> new BigDecimal("1.0"));
+        addObjectFactory(BigInteger.class, type -> new BigInteger("1.0"));
 
-        objectFactories.put(Object.class, PJReflectUtils::newInstance);
+        addObjectFactory(UUID.class, type -> UUID.randomUUID());
 
+        addObjectFactory(Object.class, PJReflectUtils::newInstance); // must be last
     }
 
     public static <T> PojoTester forClass(Class<T> clz) {
         return new PojoTester<>(clz);
     }
 
-    public PojoTester addObjectFactory(Class<?> clz, Function<Class<?>, ?> factory) {
-        objectFactories.put(clz, factory);
+    public PojoTester addObjectFactory(Class<?> clazz, Function<Class<?>, ?> factory) {
+        if (objectFactories.containsKey(clazz)) {
+            objectFactories.put(clazz, factory); // override existing factory
+        } else { // insert before Object
+            int i = objectFactoriesOrder.indexOf(Object.class) - 1;
+            if (i < 0) {
+                i = 0;
+            }
+            objectFactoriesOrder.add(i, clazz);
+            objectFactories.put(clazz, factory);
+        }
         return this;
     }
 
