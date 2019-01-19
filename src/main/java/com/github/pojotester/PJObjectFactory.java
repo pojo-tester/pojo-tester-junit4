@@ -30,19 +30,19 @@ class PJObjectFactory {
         addObjectFactory(Boolean.class, type -> Boolean.TRUE);
 
         addObjectFactory(int.class, type -> 1);
-        addObjectFactory(Integer.class, type -> Integer.parseInt("1"));
+        addObjectFactory(Integer.class, type -> Integer.valueOf("1"));
 
         addObjectFactory(short.class, type -> 1);
-        addObjectFactory(Short.class, type -> Short.parseShort("1"));
+        addObjectFactory(Short.class, type -> Short.valueOf("1"));
 
         addObjectFactory(long.class, type -> 1L);
-        addObjectFactory(Long.class, type -> Long.parseLong("1"));
+        addObjectFactory(Long.class, type -> Long.valueOf("1"));
 
         addObjectFactory(float.class, type -> 1.0f);
-        addObjectFactory(Float.class, type -> Float.parseFloat("1"));
+        addObjectFactory(Float.class, type -> Float.valueOf("1"));
 
         addObjectFactory(double.class, type -> 1.0d);
-        addObjectFactory(Double.class, type -> Double.parseDouble("1"));
+        addObjectFactory(Double.class, type -> Double.valueOf("1"));
 
         addObjectFactory(List.class, type -> new ArrayList<>());
         addObjectFactory(Set.class, type -> new HashSet<>());
