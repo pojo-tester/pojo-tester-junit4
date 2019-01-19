@@ -39,6 +39,7 @@ public final class PJReflectUtils {
             Collections.addAll(fields, current.getDeclaredFields());
             current = current.getSuperclass();
         } while (current != Object.class && useSuperclass);
+        fields.removeIf(f -> f.isSynthetic());
         return fields.toArray(new Field[0]);
     }
 
@@ -70,18 +71,14 @@ public final class PJReflectUtils {
 
     public static Method[] getAllDeclaredMethods(Class<?> clazz) {
         Objects.requireNonNull(clazz, "Class must not be null");
-        Method[] result = clazz.getDeclaredMethods();
+        List<Method> methods = new LinkedList<>();
+        Collections.addAll(methods, clazz.getDeclaredMethods());
         List<Method> defaultMethods = findConcreteMethodsOnInterfaces(clazz);
         if (defaultMethods != null) {
-            result = new Method[result.length + defaultMethods.size()];
-            System.arraycopy(result, 0, result, 0, result.length);
-            int index = result.length;
-            for (Method defaultMethod : defaultMethods) {
-                result[index] = defaultMethod;
-                index++;
-            }
+            methods.addAll(defaultMethods);
         }
-        return result;
+        methods.removeIf(m -> m.isSynthetic());
+        return methods.toArray(new Method[0]);
     }
 
     public static Object invokeMethod(Object target, Method method, Object... args) {
