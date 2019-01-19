@@ -7,22 +7,22 @@ import java.util.function.Consumer;
 
 import com.github.pojotester.PJContext;
 import com.github.pojotester.PJReflectUtils;
-import com.sun.xml.internal.ws.util.StringUtils;
 
 public class PJSetterGetterTest implements Consumer<PJContext> {
 
     public void accept(PJContext context) {
-        String fieldName = StringUtils.capitalize(context.getTestedFieldName());
-        Class<?> fieldType = PJReflectUtils.getDeclaredFieldType(context.getType(), context.getTestedFieldName());
+        String fieldName = context.getTestedFieldName();
+        String sufix = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        Class<?> fieldType = PJReflectUtils.getDeclaredFieldType(context.getType(), fieldName);
 
-        Method setter = PJReflectUtils.findMethod(context.getType(), "set" + fieldName, fieldType);
+        Method setter = PJReflectUtils.findMethod(context.getType(), "set" + sufix, fieldType);
         if (setter == null || !PJReflectUtils.checkAccessors(setter, Modifier::isPublic)) {
             return;
         }
 
         Method getter = null;
         for (String prefix : Arrays.asList("get", "is", "has", "can", "should")) {
-            getter = PJReflectUtils.findMethod(context.getType(), prefix + fieldName, fieldType);
+            getter = PJReflectUtils.findMethod(context.getType(), prefix + sufix, fieldType);
 
             if (getter != null) {
                 break;
