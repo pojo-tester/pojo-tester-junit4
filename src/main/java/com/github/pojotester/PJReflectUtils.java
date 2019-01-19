@@ -21,9 +21,11 @@ public final class PJReflectUtils {
 
     }
 
-    public static Class<?> getDeclaredFieldType(Class<?> clazz, String name) {
+    public static Class<?> getDeclaredFieldType(Class<?> clazz, String fieldName) {
+        Objects.requireNonNull(clazz, "Class must not be null");
+        Objects.requireNonNull(fieldName, "fieldName must not be null");
         try {
-            clazz.getClass().getDeclaredField(name).getType();
+            return clazz.getDeclaredField(fieldName).getType();
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -95,7 +97,7 @@ public final class PJReflectUtils {
 
     public static Object getFieldValue(Object target, String fieldName) {
         Objects.requireNonNull(target, "Target object must not be null");
-        Objects.requireNonNull(fieldName, "Field name must not be null");
+        Objects.requireNonNull(fieldName, "fieldName must not be null");
         try {
             Field field = target.getClass().getDeclaredField(fieldName);
             if (!checkAccessors(field, Modifier::isPublic)) {
@@ -104,6 +106,15 @@ public final class PJReflectUtils {
             return field.get(target);
         } catch (Exception e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    public static <T> T newInstance(Class<T> clazz) {
+        Objects.requireNonNull(clazz, "Clazz must not be null");
+        try {
+            return clazz.newInstance();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
         }
     }
 

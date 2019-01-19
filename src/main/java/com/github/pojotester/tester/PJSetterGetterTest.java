@@ -1,13 +1,13 @@
 package com.github.pojotester.tester;
 
-import com.github.pojotester.PJContext;
-import com.github.pojotester.PJReflectUtils;
-import com.sun.xml.internal.ws.util.StringUtils;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Consumer;
+
+import com.github.pojotester.PJContext;
+import com.github.pojotester.PJReflectUtils;
+import com.sun.xml.internal.ws.util.StringUtils;
 
 public class PJSetterGetterTest implements Consumer<PJContext> {
 
