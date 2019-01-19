@@ -1,5 +1,6 @@
 package com.github.pojotester.tester;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -13,9 +14,9 @@ public class PJSetterGetterTest implements Consumer<PJContext> {
     public void accept(PJContext context) {
         String fieldName = context.getTestedFieldName();
         String sufix = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        Class<?> fieldType = PJReflectUtils.getDeclaredFieldType(context.getTestedType(), fieldName);
+        Field field = PJReflectUtils.findField(context.getTestedType(), fieldName);
 
-        Method setter = PJReflectUtils.findMethod(context.getTestedType(), "set" + sufix, fieldType);
+        Method setter = PJReflectUtils.findMethod(context.getTestedType(), "set" + sufix, field.getType());
         if (setter == null || !PJReflectUtils.checkAccessors(setter, Modifier::isPublic)) {
             return;
         }
@@ -34,7 +35,7 @@ public class PJSetterGetterTest implements Consumer<PJContext> {
         }
 
         Object testObject = context.createObject(context.getTestedType());
-        Object fieldObject = context.createObject(fieldType);
+        Object fieldObject = context.createObject(field.getType());
 
         PJReflectUtils.invokeMethod(testObject, setter, fieldObject);
 

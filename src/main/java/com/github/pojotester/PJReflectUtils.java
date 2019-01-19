@@ -15,17 +15,27 @@ import java.util.function.Function;
  * Code partially copied from:
  * org.springframework.util.ReflectionUtils
  */
-public final class PJReflectUtils {
+final class PJReflectUtils {
 
     private PJReflectUtils() {
 
     }
 
-    public static Class<?> getDeclaredFieldType(Class<?> clazz, String fieldName) {
+    @SafeVarargs
+    public static boolean checkAccessors(Member member, Function<Integer, Boolean>... matchers) {
+        Objects.requireNonNull(member, "Member must not be null");
+        boolean retVal = true;
+        for (Function<Integer, Boolean> matcher : matchers) {
+            retVal &= matcher.apply(member.getModifiers());
+        }
+        return retVal;
+    }
+
+    public static Field findField(Class<?> clazz, String fieldName) {
         Objects.requireNonNull(clazz, "Class must not be null");
         Objects.requireNonNull(fieldName, "fieldName must not be null");
         try {
-            return clazz.getDeclaredField(fieldName).getType();
+            return clazz.getDeclaredField(fieldName);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -39,18 +49,22 @@ public final class PJReflectUtils {
             Collections.addAll(fields, current.getDeclaredFields());
             current = current.getSuperclass();
         } while (current != Object.class && useSuperclass);
-        fields.removeIf(f -> f.isSynthetic());
+        fields.removeIf(Field::isSynthetic);
         return fields.toArray(new Field[0]);
     }
 
-    @SafeVarargs
-    public static boolean checkAccessors(Member member, Function<Integer, Boolean>... matchers) {
-        Objects.requireNonNull(member, "Member must not be null");
-        boolean retVal = true;
-        for (Function<Integer, Boolean> matcher : matchers) {
-            retVal &= matcher.apply(member.getModifiers());
+    public static Object getFieldValue(Object target, String fieldName) {
+        Objects.requireNonNull(target, "Target object must not be null");
+        Objects.requireNonNull(fieldName, "fieldName must not be null");
+        try {
+            Field field = target.getClass().getDeclaredField(fieldName);
+            if (!checkAccessors(field, Modifier::isPublic)) {
+                field.setAccessible(true);
+            }
+            return field.get(target);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
-        return retVal;
     }
 
     public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
@@ -77,7 +91,7 @@ public final class PJReflectUtils {
         if (defaultMethods != null) {
             methods.addAll(defaultMethods);
         }
-        methods.removeIf(m -> m.isSynthetic());
+        methods.removeIf(Method::isSynthetic);
         return methods.toArray(new Method[0]);
     }
 
@@ -88,21 +102,6 @@ public final class PJReflectUtils {
             return method.invoke(target, args);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
-        }
-    }
-
-
-    public static Object getFieldValue(Object target, String fieldName) {
-        Objects.requireNonNull(target, "Target object must not be null");
-        Objects.requireNonNull(fieldName, "fieldName must not be null");
-        try {
-            Field field = target.getClass().getDeclaredField(fieldName);
-            if (!checkAccessors(field, Modifier::isPublic)) {
-                field.setAccessible(true);
-            }
-            return field.get(target);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
         }
     }
 
