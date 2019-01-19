@@ -22,7 +22,7 @@ public class PJSetterGetterTest implements Consumer<PJContext> {
 
         Method getter = null;
         for (String prefix : Arrays.asList("get", "is", "has", "can", "should")) {
-            getter = PJReflectUtils.findMethod(context.getType(), prefix + sufix, fieldType);
+            getter = PJReflectUtils.findMethod(context.getType(), prefix + sufix);
 
             if (getter != null) {
                 break;
