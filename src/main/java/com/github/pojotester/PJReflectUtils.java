@@ -21,6 +21,14 @@ public final class PJReflectUtils {
 
     }
 
+    public static Class<?> getDeclaredFieldType(Class<?> clazz, String name) {
+        try {
+            clazz.getClass().getDeclaredField(name).getType();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public static Field[] getAllDeclaredFields(Class<?> clazz, boolean useSuperclass) {
         Objects.requireNonNull(clazz, "Class must not be null");
         List<Field> fields = new LinkedList<>();
