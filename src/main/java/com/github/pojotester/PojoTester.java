@@ -17,6 +17,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.github.pojotester.tester.PJSetterGetterTest;
+
 public class PojoTester<T> {
 
     private Map<Class<?>, Consumer<PJContext>> defaultTests = new LinkedHashMap<>();
@@ -27,6 +29,8 @@ public class PojoTester<T> {
 
     private PojoTester(Class<T> clazz) {
         this.testType = clazz;
+        defaultTests.put(PJSetterGetterTest.class, new PJSetterGetterTest());
+
         objectFactories.put(String.class, type -> "string-value");
 
         objectFactories.put(char.class, type -> 'c');

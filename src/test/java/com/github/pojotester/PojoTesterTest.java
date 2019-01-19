@@ -1,13 +1,13 @@
 package com.github.pojotester;
 
-import com.github.pojotester.fixtures.Child;
+import com.github.pojotester.fixtures.ChildType;
 import org.junit.Test;
 
 public class PojoTesterTest {
 
     @Test
     public void test() {
-        PojoTester.forClass(Child.class).test();
+        PojoTester.forClass(ChildType.class).test();
     }
 
     @Test

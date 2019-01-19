@@ -1,6 +1,6 @@
 package com.github.pojotester.fixtures;
 
-public class Child extends Parent {
+public class ChildType extends ParentType {
 
     private String name;
     private Integer integerValue;

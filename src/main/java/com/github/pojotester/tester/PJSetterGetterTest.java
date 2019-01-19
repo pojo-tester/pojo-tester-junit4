@@ -13,16 +13,16 @@ public class PJSetterGetterTest implements Consumer<PJContext> {
     public void accept(PJContext context) {
         String fieldName = context.getTestedFieldName();
         String sufix = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        Class<?> fieldType = PJReflectUtils.getDeclaredFieldType(context.getType(), fieldName);
+        Class<?> fieldType = PJReflectUtils.getDeclaredFieldType(context.getTestedType(), fieldName);
 
-        Method setter = PJReflectUtils.findMethod(context.getType(), "set" + sufix, fieldType);
+        Method setter = PJReflectUtils.findMethod(context.getTestedType(), "set" + sufix, fieldType);
         if (setter == null || !PJReflectUtils.checkAccessors(setter, Modifier::isPublic)) {
             return;
         }
 
         Method getter = null;
         for (String prefix : Arrays.asList("get", "is", "has", "can", "should")) {
-            getter = PJReflectUtils.findMethod(context.getType(), prefix + sufix);
+            getter = PJReflectUtils.findMethod(context.getTestedType(), prefix + sufix);
 
             if (getter != null) {
                 break;
@@ -33,7 +33,7 @@ public class PJSetterGetterTest implements Consumer<PJContext> {
             return;
         }
 
-        Object testObject = context.createObject(context.getType());
+        Object testObject = context.createObject(context.getTestedType());
         Object fieldObject = context.createObject(fieldType);
 
         PJReflectUtils.invokeMethod(testObject, setter, fieldObject);

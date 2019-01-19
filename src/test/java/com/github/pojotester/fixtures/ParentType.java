@@ -1,6 +1,6 @@
 package com.github.pojotester.fixtures;
 
-public class Parent {
+public class ParentType {
 
     private String parentName;
 

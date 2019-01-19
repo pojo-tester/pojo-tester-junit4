@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
-import com.github.pojotester.fixtures.Child;
+import com.github.pojotester.fixtures.ChildType;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ public class PJReflectUtilsTest {
     @Test
     public void testGetAllDeclaredFields_withoutSuperclass() {
         // when
-        Field[] fields = PJReflectUtils.getAllDeclaredFields(Child.class, false);
+        Field[] fields = PJReflectUtils.getAllDeclaredFields(ChildType.class, false);
         // then
         String[] fieldNames = Stream.of(fields).map(Field::getName).toArray(String[]::new);
         Assert.assertArrayEquals(fieldNames, toArray("name", "integerValue", "intValue"));
@@ -23,7 +23,7 @@ public class PJReflectUtilsTest {
     @Test
     public void testGetAllDeclaredFields_withSuperclass() {
         // when
-        Field[] fields = PJReflectUtils.getAllDeclaredFields(Child.class, true);
+        Field[] fields = PJReflectUtils.getAllDeclaredFields(ChildType.class, true);
         // then
         String[] fieldNames = Stream.of(fields).map(Field::getName).toArray(String[]::new);
         Assert.assertArrayEquals(fieldNames, toArray("name", "integerValue", "intValue", "parentName"));
@@ -32,7 +32,7 @@ public class PJReflectUtilsTest {
     @Test
     public void testFindMethod() {
         // when
-        Method getIntegerValueMethod = PJReflectUtils.findMethod(Child.class, "getIntegerValue");
+        Method getIntegerValueMethod = PJReflectUtils.findMethod(ChildType.class, "getIntegerValue");
         // then
         Assert.assertNotNull(getIntegerValueMethod);
     }
@@ -40,7 +40,7 @@ public class PJReflectUtilsTest {
     @Test
     public void testCheckAccessors() {
         // given
-        Method getIntegerValueMethod = PJReflectUtils.findMethod(Child.class, "getIntegerValue");
+        Method getIntegerValueMethod = PJReflectUtils.findMethod(ChildType.class, "getIntegerValue");
 
         // then
         Assert.assertTrue(PJReflectUtils.checkAccessors(getIntegerValueMethod, Modifier::isPublic, m -> !Modifier.isNative(m)));
@@ -50,7 +50,7 @@ public class PJReflectUtilsTest {
     @Test
     public void testGetAllDeclaredMethods() {
         // when
-        Method[] allDeclaredMethods = PJReflectUtils.getAllDeclaredMethods(Child.class);
+        Method[] allDeclaredMethods = PJReflectUtils.getAllDeclaredMethods(ChildType.class);
 
         // then
         String[] methodNames = Stream.of(allDeclaredMethods).map(Method::getName).sorted().toArray(String[]::new);
@@ -60,9 +60,9 @@ public class PJReflectUtilsTest {
     @Test
     public void testInvokeMethod() {
         // given
-        Child child = new Child();
-        Method setNameMethod = PJReflectUtils.findMethod(Child.class, "setName", String.class);
-        Method getNameMethod = PJReflectUtils.findMethod(Child.class, "getName");
+        ChildType child = new ChildType();
+        Method setNameMethod = PJReflectUtils.findMethod(ChildType.class, "setName", String.class);
+        Method getNameMethod = PJReflectUtils.findMethod(ChildType.class, "getName");
 
         // when
         PJReflectUtils.invokeMethod(child, setNameMethod, "name");
@@ -75,7 +75,7 @@ public class PJReflectUtilsTest {
     @Test
     public void testGetFieldValue() {
         // given
-        Child child = new Child();
+        ChildType child = new ChildType();
         child.setName("john doe");
 
         // when

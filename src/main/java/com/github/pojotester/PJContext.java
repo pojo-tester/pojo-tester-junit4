@@ -21,16 +21,16 @@ public class PJContext<T> {
         this.testedFieldName = fieldToTest;
     }
 
-    public Class<?> getType() {
+    public Class<?> getTestedType() {
         return type;
-    }
-
-    public <S> S createObject(Class<S> cls) {
-        return cls.cast(objectFactory.apply(cls));
     }
 
     public String getTestedFieldName() {
         return testedFieldName;
+    }
+
+    public <S> S createObject(Class<S> cls) {
+        return cls.cast(objectFactory.apply(cls));
     }
 
 }
