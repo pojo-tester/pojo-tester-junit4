@@ -15,7 +15,7 @@ import java.util.function.Function;
  * Code partially copied from:
  * org.springframework.util.ReflectionUtils
  */
-final class PJReflectUtils {
+public final class PJReflectUtils {
 
     private PJReflectUtils() {
 
