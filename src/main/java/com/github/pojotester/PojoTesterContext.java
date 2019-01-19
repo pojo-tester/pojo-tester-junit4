@@ -4,32 +4,45 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class PojoTesterContext<T> {
 
     private final Class<T> type;
-    private final Supplier<T> newInstance;
+    private final Function<Class<?>, ?> objectFactory;
     private final String testedFieldName;
 
     private final Map<String, Method> methods;
     private final Map<String, Field> fields;
 
-    public PojoTesterContext(Class<T> classType, Supplier<T> newInstance, String fieldToTest,
+    /**
+     * PojoTesterContext
+     *
+     * @param classType     - (root) class to test
+     * @param fieldToTest   - field  to test
+     * @param objectFactory - object factory - knows how to create new objects for given type
+     * @param methods       - available methods in root class (name : java.lang.reflect.Method)
+     * @param fields        - available fields in root class (name : java.lang.reflect.Field)
+     */
+    public PojoTesterContext(Class<T> classType, String fieldToTest, Function<Class<?>, ?> objectFactory,
                              Map<String, Method> methods, Map<String, Field> fields) {
         this.type = classType;
-        this.newInstance = newInstance;
+        this.objectFactory = objectFactory;
         this.testedFieldName = fieldToTest;
         this.methods = methods;
         this.fields = fields;
     }
 
-    public Class<T> getType() {
+    public Class<?> getType() {
         return type;
     }
 
     public T createObject() {
-        return newInstance.get();
+        return type.cast(objectFactory.apply(type));
+    }
+
+    public <S> S createObject(Class<S> cls) {
+        return cls.cast(objectFactory.apply(cls));
     }
 
     public String getTestedFieldName() {
