@@ -16,33 +16,35 @@ import java.util.UUID;
 import java.util.function.Function;
 
 class PJObjectFactory {
-
     private HashMap<Class<?>, Function<Class<?>, ?>> objectFactories = new HashMap<>();
     private LinkedList<Class<?>> objectFactoriesOrder = new LinkedList<>();
 
     PJObjectFactory() {
-        addObjectFactory(String.class, type -> "string-value");
-
         addObjectFactory(char.class, type -> 'c');
         addObjectFactory(Character.class, type -> new Character('c'));
 
         addObjectFactory(boolean.class, type -> true);
         addObjectFactory(Boolean.class, type -> Boolean.TRUE);
 
+        addObjectFactory(byte.class, type -> (byte) 1);
+        addObjectFactory(Byte.class, type -> Byte.valueOf("1"));
+
+        addObjectFactory(short.class, type -> (short) 1);
+        addObjectFactory(Short.class, type -> Short.valueOf("1"));
+
         addObjectFactory(int.class, type -> 1);
         addObjectFactory(Integer.class, type -> Integer.valueOf("1"));
-
-        addObjectFactory(short.class, type -> 1);
-        addObjectFactory(Short.class, type -> Short.valueOf("1"));
 
         addObjectFactory(long.class, type -> 1L);
         addObjectFactory(Long.class, type -> Long.valueOf("1"));
 
-        addObjectFactory(float.class, type -> 1.0f);
+        addObjectFactory(float.class, type -> 1F);
         addObjectFactory(Float.class, type -> Float.valueOf("1"));
 
-        addObjectFactory(double.class, type -> 1.0d);
+        addObjectFactory(double.class, type -> 1D);
         addObjectFactory(Double.class, type -> Double.valueOf("1"));
+
+        addObjectFactory(String.class, type -> "string-value");
 
         addObjectFactory(List.class, type -> new ArrayList<>());
         addObjectFactory(Set.class, type -> new HashSet<>());
@@ -71,7 +73,12 @@ class PJObjectFactory {
         }
         Function<Class<?>, ?> factory = objectFactories.get(clz);
         if (factory != null) {
-            return clz.cast(factory.apply(clz));
+            if (clz.isPrimitive()) {
+                // do not cast primitives
+                return (S) factory.apply(clz);
+            } else {
+                return clz.cast(factory.apply(clz));
+            }
         }
         for (Map.Entry<Class<?>, Function<Class<?>, ?>> entry : objectFactories.entrySet()) {
             Class<?> factoryCandidate = entry.getKey();

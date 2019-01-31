@@ -30,7 +30,7 @@ public class PJContext<T> {
     }
 
     public <S> S createObject(Class<S> cls) {
-        return cls.cast(objectFactory.apply(cls));
+        return (S) objectFactory.apply(cls);
     }
 
 }

@@ -44,7 +44,7 @@ public class PJSetterGetterTest implements Consumer<PJContext> {
             throw new IllegalStateException("null received!");
         }
 
-        if (!testObject.equals(gotObject)) {
+        if (!fieldObject.equals(gotObject)) {
             throw new IllegalStateException("objects not equal!");
         }
     }
