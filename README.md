@@ -77,7 +77,7 @@ public class PojoExemplaryTest {
         public void setValue(DifficultType value) {
             this.value = value;
         }
-        public String getValue() {
+        public DifficultType getValue() {
             return value;
         }
     }
@@ -109,7 +109,7 @@ public class PojoExemplaryTest {
         public void setValue(DifficultType value) {
             this.value = value;
         }
-        public String getValue() {
+        public DifficultType getValue() {
             return value;
         }
     }
